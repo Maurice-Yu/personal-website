@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\hello-world-example",
+    "\\hello-world-example\\src",
+    "\\mysite",
+    "\\mysite\\mysite",
+    "\\mysite\\polls",
+    "\\mysite\\polls\\migrations",
+    "\\mysite\\polls\\migrations\\__pycache__"
+  ],
+  "SelectedNode": "\\hello-world-example\\src\\App.js",
+  "PreviewInSolutionExplorer": false
+}
