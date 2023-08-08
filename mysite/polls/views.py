@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Question
 from django.utils import timezone
-
+from django.http import JsonResponse
 def index(request):
     allquestions=Question.objects.all()
-    return HttpResponse(f"hello there are {len(allquestions)} questions")
+    data = {'questions':len(allquestions)}
+    return JsonResponse(data)#(f"hello there are {len(allquestions)} questions")
 # Create your views here.
 def index2(request):
     q = Question(question_text="What's new?", pub_date=timezone.now())
