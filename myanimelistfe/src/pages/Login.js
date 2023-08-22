@@ -7,6 +7,8 @@ export const Login= ()=> {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const win= window.sessionStorage;
+
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
@@ -15,9 +17,10 @@ export const Login= ()=> {
     setPassword(event.target.value);
   };
 
-
   const handleLogin = () => {
     // Add your login logic here
+    win.setItem("un",username)
+    win.setItem("pw",password)
     console.log('Logging in with username:', username, 'and password:', password);
   };
 
