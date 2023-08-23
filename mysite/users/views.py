@@ -17,7 +17,7 @@ def addUser(request):
 
             if not username or not password:
                 return JsonResponse({'error': 'Username and password are required.'}, status=400)
-            if User.objects.filter(username=username).exists():
+            if Users.objects.filter(username=username).exists():
                 return JsonResponse({'error': 'Username already exists.'}, status=400)
             new_user = Users(username=username)
             new_user.setPassword(password)
