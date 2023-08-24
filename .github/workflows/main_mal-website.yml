@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'develop'
+      name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -60,6 +60,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'MAL-Website'
-          slot-name: 'develop'
+          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A1055010256147BF8F6805DB06F1B7A6 }}
           package: .
