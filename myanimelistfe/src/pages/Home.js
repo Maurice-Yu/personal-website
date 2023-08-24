@@ -27,9 +27,24 @@ function Header() {
   }
   function SearchBar() {
     return (
-      <div className="search-bar">
-        <input type="text" placeholder="Search" />
-      </div>
+      <>
+      { /** 
+        <div className="search-bar">
+          <input type="text" placeholder="Search" />
+        </div>
+      */ }
+        <form class="d-flex" role="search" method="POST">
+        {/** % csrf_token % **/}
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Search"
+          name="search_query"
+          required aria-label="Search"
+        />
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+     </>
     );
   }
   
