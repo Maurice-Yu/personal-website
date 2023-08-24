@@ -39,6 +39,7 @@ results = container_client.query_items(max_item_count=10, query=QUERY["query"], 
 
 # Look at your data
 #print(list(results))
+result = [result for result in results]
 
 # You can also use the list as JSON
 print(json.dumps(list(results)[0:10], indent=4)) 
