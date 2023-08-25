@@ -22,9 +22,8 @@ def search_feature(request):
     search = data.get('searchQ')
     
     QUERY = {
-        "query": f"SELECT TOP 50 * from c WHERE c.title LIKE '%{search}%' COLLATE utf8_general_ci"
+        "query": f"SELECT * from c WHERE c.title LIKE '{search}%'"
     }
-
     # Initialize the Cosmos client
     client = cosmos_client.CosmosClient(
         url=CONFIG["ENDPOINT"],
@@ -38,6 +37,21 @@ def search_feature(request):
     db_client = client.get_database_client(CONFIG['DATABASE'])
     container_client = db_client.get_container_client(CONFIG['CONTAINER'])
     results = container_client.query_items(max_item_count=10, query=QUERY["query"], enable_cross_partition_query=True)
+    result = []  # To store the converted items
+
+    for page in results.by_page():
+        # page is of type 'itemPage'
+    
+        
+        # Process each item in the page
+        for item in page:
+            # Convert item to JSON format and append to results
+            result.append(item)
+            print(item.get("title"))
+            print("itworks")
+# Create a JSON response using JsonResponse
+    response_data = {"results": result}
+    return JsonResponse(response_data)
 
     if request.method == 'POST':
         # Retrieve the search query entered by the user
@@ -78,6 +92,7 @@ def search_feature_test(request,queryVar):
         for item in page:
             # Convert item to JSON format and append to results
             result.append(item)
+            print(item.get("title"))
 
 # Create a JSON response using JsonResponse
     response_data = {"results": result}

@@ -1,4 +1,16 @@
 import "../css/Home.css";
+import { redirect } from "react-router-dom";
+import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { Route, Routes, useNavigate} from 'react-router-dom';
+
+const win= window.sessionStorage;
+const initialdata = {results:
+[{title:
+"test",
+description:"test"}]
+}
+win.setItem("animeList",JSON.stringify(initialdata));
 function Header() {
     return (
       <header>
@@ -25,26 +37,29 @@ function Header() {
       </div>
     );
   }
-  function SearchBar() {
+  function SearchBar({ queryDB }) {
+    const [query, setQuery] = useState('Bungaku');
+  
+    function handleQueryChange(event) {
+      setQuery(event.target.value);
+    }
+  
     return (
       <>
-      { /** 
-        <div className="search-bar">
-          <input type="text" placeholder="Search" />
-        </div>
-      */ }
-        <form class="d-flex" role="search" method="POST">
-        {/** % csrf_token % **/}
         <input
-          class="form-control me-2"
+          className="form-control me-2"
           type="search"
           placeholder="Search"
           name="search_query"
-          required aria-label="Search"
+          required
+          aria-label="Search"
+          onChange={handleQueryChange}
+          value={query}
         />
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-     </>
+        <button className="btn btn-outline-success" onClick={() => queryDB(query)}>
+          Search
+        </button>
+      </>
     );
   }
   
@@ -67,79 +82,65 @@ function Header() {
       </div>
     );
   }
-  function AnimeList() {
-    const animeEntries = [
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      { title: 'Anime 1', description: 'Description for Anime 1' },
-      { title: 'Anime 2', description: 'Description for Anime 2' },
-      { title: 'Anime 3', description: 'Description for Anime 3' },
-      // Add more anime entries as needed
-    ];
-  
+  function AnimeList({ animeListData }) {
+    if (animeListData) {
+      return (
+        <div className="anime-list">
+          {animeListData.results.map((entry, index) => (
+            <AnimeEntry key={index} title={entry.title} description={entry.description} />
+          ))}
+        </div>
+      );
+    } else {
+      return <p>No anime entries available.</p>;
+    }
+  }
+  function MainContent({ animeListData, queryDB }) {
     return (
-      <div className="anime-list">
-        {animeEntries.map((entry, index) => (
-          <AnimeEntry key={index} title={entry.title} description={entry.description} />
-        ))}
+      <div className="main-content">
+        <div style={{ display: 'flex', flex: 2 }}>
+          <LeftColumn />
+          <div className="anime-list-container">
+            <AnimeList animeListData={animeListData} />
+          </div>
+          <RightColumn queryDB={queryDB} />
+        </div>
       </div>
     );
   }
-  function MainContent() {
-    return (
-        <div className="main-content">
-          <div style={{ display: 'flex', flex: 2 }}>
-            <LeftColumn />
-            <div className="anime-list-container">
-              <AnimeList />
-            </div>
-            <RightColumn />
-          </div>
+    function RightColumn({ queryDB }) {
+      return (
+        <div className="right-column">
+          <SearchBar queryDB={queryDB} />
+          <SearchFilters />
         </div>
       );
-    }
-  function RightColumn() {
-    return (
-      <div className="right-column">
-        <SearchBar />
-        <SearchFilters />
-      </div>
-    );
-  }  
+    }  
   
 
   
 export const Home = () =>
 {
-    return (
-    
-        <div className="flex-container">
-        <Header />
-        <MainContent />
-        <Footer />
-      </div>
-    
-        );
+  const [animeListData, setAnimeListData] = useState(initialdata);
+  function queryDB(query) {
+    fetch('http://127.0.0.1:8000/search/search/', {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({"searchQ": query})
+    })
+    .then(response => response.json())
+    .then(data => {
+      setAnimeListData(data); // Update animeListData with new data
+      win.setItem("animeList", JSON.stringify(data)); // Update session storage
+    });
+  }
+  return (
+    <div className="flex-container">
+      <Header />
+      <MainContent animeListData={animeListData} queryDB={queryDB} />
+      <Footer />
+    </div>
+  );
 }
