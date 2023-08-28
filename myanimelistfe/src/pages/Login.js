@@ -4,32 +4,19 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Route, Routes, useNavigate} from 'react-router-dom';
 
+
+
+
+
+
+
 export const Login= ()=> {
   const navigate = useNavigate();
   const [username, setUsername] = useState('maurice2');
   const [password, setPassword] = useState('asdf');
   const win= window.sessionStorage;
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
-  // const handleLogin = () => {
-  //   // Add your login logic here
-  //   win.setItem("un",username)
-  //   win.setItem("pw",password)
-  //   console.log('Logging in with username:', username, 'and password:', password);
-  // };
-
-  const handleCreateAccount = () => {
-    // Add your account creation logic here
-    console.log('Creating account with username:', username, 'and password:', password);
-  };
-  const handleCreate =(username,password)=> {
+  function handleCreate() {
     fetch('http://127.0.0.1:8000/users/addUser/', {
         method: "POST",
         headers: {
@@ -59,8 +46,7 @@ export const Login= ()=> {
         //    //Perform actions with the response data from the view
         //})
   }
-
-  const handleClick = (username) =>{
+  function handleClick(){
     fetch('http://127.0.0.1:8000/users/testGet/'+username+'/', {
         method: "GET",
         headers: {
@@ -75,7 +61,7 @@ export const Login= ()=> {
         .then(data => {
             console.log(data.username)
             console.log(data.password)
-
+  
             //Perform actions with the response data from the view
         })
         //    console.log("hello");
@@ -86,8 +72,28 @@ export const Login= ()=> {
         //    return "somethign";
         //    //Perform actions with the response data from the view
         //})
-}
+  }
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
+  };
 
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  // const handleLogin = () => {
+  //   // Add your login logic here
+  //   win.setItem("un",username)
+  //   win.setItem("pw",password)
+  //   console.log('Logging in with username:', username, 'and password:', password);
+  // };
+
+  const handleCreateAccount = () => {
+    // Add your account creation logic here
+    console.log('Creating account with username:', username, 'and password:', password);
+  };
+ 
+ 
     return (
     <div className="main_login_page">
       <table>
@@ -102,8 +108,8 @@ export const Login= ()=> {
           </tr>
           <tr>
             <td colSpan="2" className="button-row">
-              <button onClick={handleClick(username)}>Login</button>
-              <button onClick={handleCreate(username,password)}>Create Account</button>
+              <button onClick={handleClick}>Login</button>
+              <button onClick={handleCreate}>Create Account</button>
             </td>
           </tr>
         </tbody>

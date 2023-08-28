@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'polls.apps.PollsConfig',
     'corsheaders',
-    'users.apps.UsersConfig'
+    'users.apps.UsersConfig',
+    'search.apps.SearchConfig'
 ]
 
 MIDDLEWARE = [
