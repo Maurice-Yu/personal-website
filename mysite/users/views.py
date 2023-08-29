@@ -47,6 +47,44 @@ def testAdd(request,un,pw):
             return JsonResponse({'error': 'Username already exists.'}, status=400)
         new_user = Users(username=un)
         new_user.setPassword(pw)
+        new_user.animeList={"title":"nothing yet"}
         new_user.save()
         return JsonResponse({'message': 'User registered successfully.'})
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
+def auth(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+            if not username or not password:
+                return JsonResponse({'error': 'Username and password are required.'}, status=400)
+            if not Users.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'user does not exist.'}, status=400)
+            usercheck = Users.objects.get(username=username)
+            print("inside auth:"+usercheck.passwordHash)
+            if usercheck.check_password(password):
+                return JsonResponse({'ok': 'credentials match'}, status=200)
+            return JsonResponse({'error': 'user does not exist.'}, status=599)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
+
+def getList(request):
+    
+    print(request)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+
+            if not username :
+                return JsonResponse({'error': 'Username and password are required.'}, status=400)
+            if not Users.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'Username does not exist'}, status=400)
+            allUsers=Users.objects.all()
+            filterUser=allUsers.filter(username=username).animeList
+            return JsonResponse(filterUser)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
+        
     return JsonResponse({'error': 'Invalid request method.'}, status=405)

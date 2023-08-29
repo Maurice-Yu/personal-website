@@ -47,23 +47,23 @@ export const Login= ()=> {
         //})
   }
   function handleClick(){
-    fetch('http://127.0.0.1:8000/users/testGet/'+username+'/', {
-        method: "GET",
+    fetch('http://127.0.0.1:8000/users/auth/', {
+        method: "POST",
         headers: {
-            'Accept': 'application/json',
+            'Accept': 'application/json'
             //'X-Requested-With': 'XMLHttpRequest',
-        }//, //mode: "no-cors"
+        }//, //mode: "no-cors",
+        ,
+        body: JSON.stringify({"username":username,"password":password})
     })
         .then(response => {
             console.log(response.status);
-            return response.json() //Convert response to JSON
-        })
-        .then(data => {
-            console.log(data.username)
-            console.log(data.password)
-  
-            //Perform actions with the response data from the view
-        })
+            if(response.status==200)
+            {
+              win.setItem("un",username);
+              navigate('/');
+            }
+        });
         //    console.log("hello");
         //    console.log(JSON.stringify(response.json())); //Convert response to JSON
         //});

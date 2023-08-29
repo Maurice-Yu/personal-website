@@ -32,7 +32,7 @@ function Header() {
   function LeftColumn() {
     return (
       <div className="left-column">
-        <button className="button">Button 1</button>
+        <button className="button">get my list</button>
         <button className="button">Button 2</button>
         <button className="button">Button 3</button>
         <button className="button">Button 4</button>
@@ -67,9 +67,23 @@ function Header() {
   }
   
   function SearchFilters() {
+    function queryMyList() {
+      fetch('http://127.0.0.1:8000/users/getList/', {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({"username": win.getItem("un")})
+      })
+      .then(response => response.json())
+      .then(data => {
+        setAnimeListData(data); // Update animeListData with new data
+        win.setItem("animeList", JSON.stringify(data)); // Update session storage
+      });
+    }
     return (
       <div className="search-buttons">
-        <button className="button">Filter 1</button>
+        <button className="button" onClick={queryMyList}>Filter 1</button>
         <button className="button">Filter 2</button>
         <button className="button">Filter 3</button>
         {/* Add more filter buttons if needed */}
