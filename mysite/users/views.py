@@ -82,8 +82,9 @@ def getList(request):
             if not Users.objects.filter(username=username).exists():
                 return JsonResponse({'error': 'Username does not exist'}, status=400)
             allUsers=Users.objects.all()
-            filterUser=allUsers.filter(username=username).animeList
-            return JsonResponse(filterUser)
+            filterUser=allUsers.filter(username=username)[0].animeList
+            returnResult = {"results":[filterUser]}
+            return JsonResponse(returnResult)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
         
