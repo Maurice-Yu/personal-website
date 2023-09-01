@@ -4,6 +4,16 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Route, Routes, useNavigate} from 'react-router-dom';
 
+export const Home = () => {
+  const [show, setShow] = useState(true); //is default home page showing?
+  const [info, setInfo] = useState({title:
+    "test title",
+    description:"test desc",
+    pic:"test pic",
+    picture:"test picture",
+    synonyms:"test syn",
+    });
+//const navigate = useNavigate();
 const win= window.sessionStorage;
 const initialdata = {results:
 [{title:
@@ -59,11 +69,16 @@ function Header() {
           onChange={handleQueryChange}
           value={query}
         />
-        <button className="btn btn-outline-success" onClick={() => queryDB(query)}>
+        <button className="btn btn-outline-success" onClick={() => {queryDB(query); setShow(true)}}>
           Search
         </button>
       </>
     );
+  }
+
+  function NavToInfo(info) {
+    setInfo(info)
+    setShow(false)
   }
   
   function SearchFilters( ) {
@@ -77,26 +92,47 @@ function Header() {
       </div>
     );
   }
-  function AnimeEntry({ title, description,img,synonyms }) {
+  function AnimeEntry({ info, title, description,img,synonyms }) {
    console.log(img);
    console.log(description);
     return (
-      <div className="anime-entry">
+      <div className="anime-entry" >
         <input type="checkbox" className="checkbox" />
-        <div className="title">{title}</div>
+        <div className="title" >{title}</div>
         <div className="description">{description}</div>
-        <div ><img src={img} alt="notworking"></img></div>
+        <div ><img src={img} alt="notworking" onClick={() => NavToInfo(info)}></img></div>
         <div >{synonyms}</div>
         
       </div>
     );
+  }
+  function AnimeInfo() {
+    console.log(info);
+    return(
+      <div className="anime-info">
+        <h1>{info.title}</h1>
+        <div className="anime-info-meat">
+          <div class="anime-info-image">
+            <img src={info.picture} alt="notworking"></img>
+          </div>
+          <div className="ani-info-data">
+            <table>
+              <tbody>
+                <tr className="ani-info-description">{info.description}</tr>
+                <tr className="ani-info-tags">{info.tags}</tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
   }
   function AnimeList({ animeListData }) {
     if (animeListData) {
       return (
         <div className="anime-list">
           {animeListData.results.map((entry, index) => (
-            <AnimeEntry key={index} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms} />
+            <AnimeEntry key={index} info={entry} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms} />
           ))}
         </div>
       );
@@ -110,7 +146,9 @@ function Header() {
         <div style={{ display: 'flex', flex: 2 }}>
           <LeftColumn queryDB={queryDB} queryMyList={queryMyList}/>
           <div className="anime-list-container">
-            <AnimeList animeListData={animeListData} />
+            {
+              show ? <AnimeList animeListData={animeListData} /> : <AnimeInfo />
+            }
           </div>
           <RightColumn queryDB={queryDB} />
         </div>
@@ -125,12 +163,10 @@ function Header() {
         </div>
       );
     }  
-  
 
-  
-export const Home = () =>
-{
+//export const Home = () => {
   const [animeListData, setAnimeListData] = useState(initialdata);
+  //const [show, setShow] = useState(true); //is default home page showing?
   function queryDB(query) {
     fetch('http://127.0.0.1:8000/search/search/', {
       method: "POST",
@@ -163,7 +199,10 @@ export const Home = () =>
   return (
     <div className="flex-container">
       <Header />
-      <MainContent animeListData={animeListData} queryDB={queryDB} queryMyList={queryMyList} />
+        {
+          //show ? <MainContent animeListData={animeListData} queryDB={queryDB} queryMyList={queryMyList} /> : <AnimeInfo />
+        }
+        <MainContent animeListData={animeListData} queryDB={queryDB} queryMyList={queryMyList} />
       <Footer />
     </div>
   );

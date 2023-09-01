@@ -1,10 +1,20 @@
+/**
+ * Please ignore this file for now.
+ * It currently serves no purpose.
+ */
+
+
 import "../css/Home.css";
 import { redirect } from "react-router-dom";
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Route, Routes, useNavigate} from 'react-router-dom';
 
+export const AnimeInfo = () =>
+{
+const navigate = useNavigate();
 const win= window.sessionStorage;
+const entry = win.currAnime;
 const initialdata = {results:
 [{title:
 "test",
@@ -29,10 +39,10 @@ function Header() {
     );
   }
 
-  function LeftColumn() {
+  function LeftColumn({queryMyList}) {
     return (
       <div className="left-column">
-        <button className="button">get my list</button>
+        <button className="button" onClick = {()=>queryMyList()}>get my list</button>
         <button className="button">Button 2</button>
         <button className="button">Button 3</button>
         <button className="button">Button 4</button>
@@ -66,64 +76,50 @@ function Header() {
     );
   }
   
-  function SearchFilters() {
-    function queryMyList() {
-      fetch('http://127.0.0.1:8000/users/getList/', {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({"username": win.getItem("un")})
-      })
-      .then(response => response.json())
-      .then(data => {
-        setAnimeListData(data); // Update animeListData with new data
-        win.setItem("animeList", JSON.stringify(data)); // Update session storage
-      });
-    }
+  function SearchFilters( ) {
+
     return (
       <div className="search-buttons">
-        <button className="button" onClick={queryMyList}>Filter 1</button>
+        <button className="button" >Filter 1</button>
         <button className="button">Filter 2</button>
         <button className="button">Filter 3</button>
         {/* Add more filter buttons if needed */}
       </div>
     );
   }
-  function AnimeEntry({ title, description,img,synonyms }) {
+  function AnimeEntry({ info, title, description,img,synonyms }) {
    console.log(img);
    console.log(description);
     return (
       <div className="anime-entry">
-        <input type="checkbox" className="checkbox" />
-        <div className="title">{title}</div>
-        <div className="description">{description}</div>
-        <div ><img src={img} alt="notworking"></img></div>
-        <div >{synonyms}</div>
+        
         
       </div>
     );
   }
-  function AnimeList({ animeListData }) {
-    if (animeListData) {
+  function AnimeInfo({ info }) {
+    //////////////////////////////////////////////////////////////////
+    if (info) {
       return (
-        <div className="anime-list">
-          {animeListData.results.map((entry, index) => (
-            <AnimeEntry key={index} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms} />
-          ))}
+        <div className="anime-info">
+          <input type="checkbox" className="checkbox" />
+          <div className="title" >{info.title}</div>
+          <div className="description">{info.description}</div>
+          <div ><img src={info.img} alt="notworking" ></img></div>
+          <div >{info.synonyms}</div>
         </div>
       );
     } else {
       return <p>No anime entries available.</p>;
     }
   }
-  function MainContent({ animeListData, queryDB }) {
+  function MainContent({ entry, queryDB,queryMyList }) {
     return (
       <div className="main-content">
         <div style={{ display: 'flex', flex: 2 }}>
-          <LeftColumn />
-          <div className="anime-list-container">
-            <AnimeList animeListData={animeListData} />
+          <LeftColumn queryDB={queryDB} queryMyList={queryMyList}/>
+          <div className="anime-info-container">
+            <AnimeInfo info={entry} />
           </div>
           <RightColumn queryDB={queryDB} />
         </div>
@@ -141,8 +137,8 @@ function Header() {
   
 
   
-export const Home = () =>
-{
+
+  
   const [animeListData, setAnimeListData] = useState(initialdata);
   function queryDB(query) {
     fetch('http://127.0.0.1:8000/search/search/', {
@@ -158,10 +154,25 @@ export const Home = () =>
       win.setItem("animeList", JSON.stringify(data)); // Update session storage
     });
   }
+  function queryMyList() {
+    fetch('http://127.0.0.1:8000/users/getList/', {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({"username": win.getItem("un")})
+    })
+    .then(response => response.json())
+    .then(data => {
+       // Update animeListData with new data
+       setAnimeListData(data);
+      win.setItem("animeList", JSON.stringify(data)); // Update session storage
+    });
+  }
   return (
     <div className="flex-container">
       <Header />
-      <MainContent animeListData={animeListData} queryDB={queryDB} />
+      <MainContent animeListData={animeListData} queryDB={queryDB} queryMyList={queryMyList} />
       <Footer />
     </div>
   );
