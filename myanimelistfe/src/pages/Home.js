@@ -97,7 +97,7 @@ function Header() {
    console.log(description);
     return (
       <div className="anime-entry" >
-        <input type="checkbox" className="checkbox" />
+        <input type="checkbox" className="checkbox" value={info} />
         <div className="title" >{title}</div>
         <div className="description">{description}</div>
         <div ><img src={img} alt="notworking" onClick={() => NavToInfo(info)}></img></div>
@@ -128,11 +128,28 @@ function Header() {
     )
   }
   function AnimeList({ animeListData }) {
+    const addToList =(payload)=> {
+      fetch('http://127.0.0.1:8000/users/addToList/', {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({"payload": payload,"username": win.getItem("un")})
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      });
+    }
     if (animeListData) {
+      
       return (
         <div className="anime-list">
           {animeListData.results.map((entry, index) => (
-            <AnimeEntry key={index} info={entry} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms} />
+          <div>
+            <AnimeEntry key={index} info={entry} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms}/>
+          <button onClick={() =>addToList(entry)}>add to list</button>
+          </div>
           ))}
         </div>
       );
@@ -192,6 +209,8 @@ function Header() {
     .then(response => response.json())
     .then(data => {
        // Update animeListData with new data
+       console.log("printing mylist" +data)
+       console.log(data.results);
        setAnimeListData(data);
       win.setItem("animeList", JSON.stringify(data)); // Update session storage
     });
