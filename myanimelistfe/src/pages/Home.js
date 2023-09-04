@@ -80,11 +80,29 @@ function Header() {
     setInfo(info)
     setShow(false)
   }
-  
-  function SearchFilters( ) {
 
+  
+  function FilterButton({ queryDBtag, filter}) {
+    //Have a <button> tag and an associated query that searches by that filter
+    return(
+      <button className="search-filter-button" onClick={() => {console.log(filter); queryDBtag({filter}); setShow(true)}}>{filter}</button>
+    )
+  }
+  function SearchFilters({ queryDBtag }) {
+    const tags = ["Action", "Adventure", "Comedy", "Coming of Life", "Drama", "Fantasy",
+                "Isekai", "Mystery", "Romance", "School", "Science Fiction", "Seinin", "Shonen",
+                "Slice of Life"];
+    //console.log(tags);
+    //console.log(tags.length);
+    //tags.forEach((t) => console.log(t))
     return (
       <div className="search-buttons">
+        {
+          tags.map((t) => (
+            <FilterButton queryDBtag={queryDBtag} filter={t} />
+          ))
+          
+        }
         <button className="button" >Filter 1</button>
         <button className="button">Filter 2</button>
         <button className="button">Filter 3</button>
@@ -92,6 +110,7 @@ function Header() {
       </div>
     );
   }
+  
   function AnimeEntry({ info, title, description,img,synonyms }) {
    console.log(img);
    console.log(description);
@@ -157,7 +176,7 @@ function Header() {
       return <p>No anime entries available.</p>;
     }
   }
-  function MainContent({ animeListData, queryDB,queryMyList }) {
+  function MainContent({ animeListData, queryDB, queryDBtag,queryMyList }) {
     return (
       <div className="main-content">
         <div style={{ display: 'flex', flex: 2 }}>
@@ -167,16 +186,17 @@ function Header() {
               show ? <AnimeList animeListData={animeListData} /> : <AnimeInfo />
             }
           </div>
-          <RightColumn queryDB={queryDB} />
+          <RightColumn queryDB={queryDB} queryDBtag={queryDBtag} />
         </div>
       </div>
     );
   }
-    function RightColumn({ queryDB }) {
+    function RightColumn({ queryDB, queryDBtag }) {
+      
       return (
         <div className="right-column">
           <SearchBar queryDB={queryDB} />
-          <SearchFilters />
+          <SearchFilters queryDBtag={queryDBtag} />
         </div>
       );
     }  
@@ -186,6 +206,20 @@ function Header() {
   //const [show, setShow] = useState(true); //is default home page showing?
   function queryDB(query) {
     fetch('http://127.0.0.1:8000/search/search/', {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({"searchQ": query})
+    })
+    .then(response => response.json())
+    .then(data => {
+      setAnimeListData(data); // Update animeListData with new data
+      win.setItem("animeList", JSON.stringify(data)); // Update session storage
+    });
+  }
+  function queryDBtag(query) {
+    fetch('http://127.0.0.1:8000/search/searchTag/', {
       method: "POST",
       headers: {
         'Accept': 'application/json',
@@ -221,7 +255,7 @@ function Header() {
         {
           //show ? <MainContent animeListData={animeListData} queryDB={queryDB} queryMyList={queryMyList} /> : <AnimeInfo />
         }
-        <MainContent animeListData={animeListData} queryDB={queryDB} queryMyList={queryMyList} />
+        <MainContent animeListData={animeListData} queryDB={queryDB} queryDBtag={queryDBtag} queryMyList={queryMyList} />
       <Footer />
     </div>
   );

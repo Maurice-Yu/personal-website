@@ -61,7 +61,57 @@ def search_feature(request):
         return JsonResponse({'results':results})
     else:
         return render(request, 'app/template_name.html',{})
+
+
+# Create your views here.
+def search_tag_feature(request):
+    # Check if the request is a post request.
+    data = json.loads(request.body)
+    search = data.get('searchQ')
     
+    QUERY = {
+        "query": f"SELECT * from c WHERE LOWER(c.title) LIKE LOWER('{search}%')"
+    }
+    #QUERY = {
+    #    "query": f"SELECT * from c WHERE ARRAY_CONTAINS(c.tags, LOWER('{search}%'))"
+    #}
+    # Initialize the Cosmos client
+    client = cosmos_client.CosmosClient(
+        url=CONFIG["ENDPOINT"],
+        credential=CONFIG["PRIMARYKEY"]
+        #url_connection=CONFIG["ENDPOINT"], auth={"masterKey": CONFIG["PRIMARYKEY"]}
+    )
+
+    # Query for some data
+    #results = client.query_databases(CONTAINER_LINK, QUERY, FEEDOPTIONS, max_item_count=10)
+    #results = client.list_databases(max_item_count=10)
+    db_client = client.get_database_client(CONFIG['DATABASE'])
+    container_client = db_client.get_container_client(CONFIG['CONTAINER'])
+    results = container_client.query_items(max_item_count=10, query=QUERY["query"], enable_cross_partition_query=True)
+    result = []  # To store the converted items
+
+    for page in results.by_page():
+        # page is of type 'itemPage'
+    
+        
+        # Process each item in the page
+        for item in page:
+            # Convert item to JSON format and append to results
+            result.append(item)
+            print(item.get("title"))
+            print("itworks")
+# Create a JSON response using JsonResponse
+    response_data = {"results": result}
+    return JsonResponse(response_data)
+
+    if request.method == 'POST':
+        # Retrieve the search query entered by the user
+        search_query = request.POST['search_query']
+        # Filter your model by the search query
+        # posts = Model.objects.filter(fieldName__contains=search_query)
+        return JsonResponse({'results':results})
+    else:
+        return render(request, 'app/template_name.html',{})
     
 def search_feature_test(request,queryVar):
     # Check if the request is a post request.
