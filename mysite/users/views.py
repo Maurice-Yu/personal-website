@@ -111,3 +111,28 @@ def addToList(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
+def deleteFromList(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            payload = data.get('payload')
+            if not username:
+                return JsonResponse({'error': 'Username and password are required.'}, status=400)
+            if not payload:
+                return JsonResponse({'error': 'Username and password are required.'}, status=400)
+            if not Users.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'Username does not exist'}, status=400)
+            user = Users.objects.get(username=username)
+            print("before"+ json.dumps(user.animeList.get('results')))
+            tempList=user.animeList.get('results')
+            print("templistbefore"+templist)
+            templist2 = [d for d in templist if d['id'] != payload]
+            print("templistafter"+templist2)
+            user.animeList={'results':templist2}
+            user.save()
+            print("after "+ json.dumps(user.animeList.get('results')))
+            return JsonResponse({'OK': 'Invalid request method.'}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
