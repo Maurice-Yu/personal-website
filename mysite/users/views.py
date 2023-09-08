@@ -125,10 +125,11 @@ def deleteFromList(request):
                 return JsonResponse({'error': 'Username does not exist'}, status=400)
             user = Users.objects.get(username=username)
             print("before"+ json.dumps(user.animeList.get('results')))
-            tempList=user.animeList.get('results')
-            print("templistbefore"+templist)
-            templist2 = [d for d in templist if d['id'] != payload]
-            print("templistafter"+templist2)
+            templist=user.animeList.get('results')
+            print("the templist"+json.dumps(templist))
+            # print("templistbefore"+templist)
+            templist2 =  [d for d in templist if d['id'] != payload]
+            # print("templistafter"+templist2)
             user.animeList={'results':templist2}
             user.save()
             print("after "+ json.dumps(user.animeList.get('results')))

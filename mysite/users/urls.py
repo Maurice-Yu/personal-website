@@ -10,7 +10,7 @@ urlpatterns = [
     path("auth/",views.auth),
     path("getList/",views.getList),
     path("addToList/",views.addToList),
-    path("deleteFromList/",views.addToList)
+    path("deleteFromList/",views.deleteFromList)
        
 
          
