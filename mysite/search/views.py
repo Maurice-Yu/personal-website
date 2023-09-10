@@ -53,15 +53,15 @@ def search_feature(request):
     #print("____________________")
     #print(p.count("i"))
     #print("____________________")
-    pager = results.by_page()
-    pager.next()
-    token = pager.continuation_token
-    second_page = list(pager.next())[0]
-    pager = results.by_page(token)
-    second_page_fetched_with_continuation_token = list(pager.next())[0]
-    print(token)
-    pager.next()
-    pager = results.by_page(token)
+    #pager = results.by_page()
+    #pager.next()
+    #token = pager.continuation_token
+    #second_page = list(pager.next())[0]
+    #pager = results.by_page(token)
+    #second_page_fetched_with_continuation_token = list(pager.next())[0]
+    #print(token)
+    #pager.next()
+    #pager = results.by_page(token)
 
     #print(list(pages.next()))
 
@@ -119,12 +119,12 @@ def search_tag_feature(request):
     results = container_client.query_items(query=QUERY["query"], max_item_count = 10, enable_cross_partition_query = True)
     result = []  # To store the converted items
 
-    pager = results.by_page()
-    pager.next()
-    token = pager.continuation_token
-    second_page = list(pager.next())[0]
-    pager = results.by_page(token)
-    second_page_fetched_with_continuation_token = list(pager.next())[0]
+    #pager = results.by_page()
+    #pager.next()
+    #token = pager.continuation_token
+    #second_page = list(pager.next())[0]
+    #pager = results.by_page(token)
+    #second_page_fetched_with_continuation_token = list(pager.next())[0]
     #print(pager)
     #print(second_page)
     #print(second_page_fetched_with_continuation_token)
