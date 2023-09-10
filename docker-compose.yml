@@ -32,3 +32,16 @@ services:
       - POSTGRES_PASSWORD=postgres
     depends_on:
       - db
+  frontend:
+    build: ./myanimelistfe
+    ports:
+      - 3000:3000
+    stdin_open: true
+    # volumes:
+    #   - ./frontend:/usr/src/app
+    #   - /usr/src/app/node_modules
+    restart: always
+    # networks:
+    #   - react-express
+    depends_on:
+      - web
