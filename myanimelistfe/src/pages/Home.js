@@ -160,6 +160,20 @@ function Header() {
         console.log(data);
       });
     }
+    const deleteFromList =(payload)=> {
+      fetch('http://127.0.0.1:8000/users/deleteFromList/', {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({"payload": payload,"username": win.getItem("un")})
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        console.log(payload);
+      });
+    }
     if (animeListData) {
       
       return (
@@ -168,6 +182,7 @@ function Header() {
           <div>
             <AnimeEntry key={index} info={entry} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms}/>
           <button onClick={() =>addToList(entry)}>add to list</button>
+          <button onClick={() =>deleteFromList(entry.id)}>delete</button>
           </div>
           ))}
         </div>
