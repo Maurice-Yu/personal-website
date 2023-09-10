@@ -36,8 +36,34 @@ def search_feature(request):
     #results = client.list_databases(max_item_count=10)
     db_client = client.get_database_client(CONFIG['DATABASE'])
     container_client = db_client.get_container_client(CONFIG['CONTAINER'])
-    results = container_client.query_items(max_item_count=10, query=QUERY["query"], enable_cross_partition_query=True)
+    results = container_client.query_items(max_item_count=1, query=QUERY["query"], enable_cross_partition_query=True)
     result = []  # To store the converted items
+    print(results)
+    #pages = results.by_page()
+    #print(pages)
+    #p1 = list(pages)
+    #p = list(pages.next())
+    #print(p1)
+    #print("____________________")
+    #print(p)
+    #p = list(pages.next())
+    #print(p1)
+    #print("____________________")
+    #print(p)
+    #print("____________________")
+    #print(p.count("i"))
+    #print("____________________")
+    pager = results.by_page()
+    pager.next()
+    token = pager.continuation_token
+    second_page = list(pager.next())[0]
+    pager = results.by_page(token)
+    second_page_fetched_with_continuation_token = list(pager.next())[0]
+    print(token)
+    pager.next()
+    pager = results.by_page(token)
+
+    #print(list(pages.next()))
 
     for page in results.by_page():
         # page is of type 'itemPage'
@@ -70,8 +96,10 @@ def search_tag_feature(request):
     search = data.get('searchQ')
     
     QUERY = {
-        "query": f"SELECT * from c WHERE LOWER(c.title) LIKE LOWER('{search}%')"
+    #    "query": f"SELECT * from c WHERE LOWER(c.title) LIKE LOWER('{search}%')"
+        "query": f"SELECT * from c WHERE ARRAY_CONTAINS(c.tags, LOWER('{search}'))"
     }
+    print(QUERY)
     #QUERY = {
     #    "query": f"SELECT * from c WHERE ARRAY_CONTAINS(c.tags, LOWER('{search}%'))"
     #}
@@ -87,9 +115,19 @@ def search_tag_feature(request):
     #results = client.list_databases(max_item_count=10)
     db_client = client.get_database_client(CONFIG['DATABASE'])
     container_client = db_client.get_container_client(CONFIG['CONTAINER'])
-    results = container_client.query_items(max_item_count=10, query=QUERY["query"], enable_cross_partition_query=True)
+    #results = container_client.query_items(query=QUERY["query"], options={"maxItemCount": 10, "enableCrossPartitionQuery": True})
+    results = container_client.query_items(query=QUERY["query"], max_item_count = 10, enable_cross_partition_query = True)
     result = []  # To store the converted items
 
+    pager = results.by_page()
+    pager.next()
+    token = pager.continuation_token
+    second_page = list(pager.next())[0]
+    pager = results.by_page(token)
+    second_page_fetched_with_continuation_token = list(pager.next())[0]
+    #print(pager)
+    #print(second_page)
+    #print(second_page_fetched_with_continuation_token)
     for page in results.by_page():
         # page is of type 'itemPage'
     

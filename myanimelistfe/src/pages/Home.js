@@ -85,7 +85,7 @@ function Header() {
   function FilterButton({ queryDBtag, filter}) {
     //Have a <button> tag and an associated query that searches by that filter
     return(
-      <button className="search-filter-button" onClick={() => {console.log(filter); queryDBtag({filter}); setShow(true)}}>{filter}</button>
+      <button className="button search-filter-button" onClick={() => {console.log(filter); queryDBtag(filter); setShow(true)}}>{filter}</button>
     )
   }
   function SearchFilters({ queryDBtag }) {
@@ -102,11 +102,11 @@ function Header() {
             <FilterButton queryDBtag={queryDBtag} filter={t} />
           ))
           
-        }
-        <button className="button" >Filter 1</button>
-        <button className="button">Filter 2</button>
-        <button className="button">Filter 3</button>
-        {/* Add more filter buttons if needed */}
+        }{
+        //<button className="button" >Filter 1</button>
+        //<button className="button">Filter 2</button>
+        //<button className="button">Filter 3</button>
+        /* Add more filter buttons if needed */}
       </div>
     );
   }
@@ -214,11 +214,14 @@ function Header() {
     })
     .then(response => response.json())
     .then(data => {
+      console.log(query);
+      console.log(data);
       setAnimeListData(data); // Update animeListData with new data
       win.setItem("animeList", JSON.stringify(data)); // Update session storage
     });
   }
   function queryDBtag(query) {
+    console.log("query db tag");
     fetch('http://127.0.0.1:8000/search/searchTag/', {
       method: "POST",
       headers: {
@@ -228,6 +231,8 @@ function Header() {
     })
     .then(response => response.json())
     .then(data => {
+      console.log(query);
+      console.log(data);
       setAnimeListData(data); // Update animeListData with new data
       win.setItem("animeList", JSON.stringify(data)); // Update session storage
     });
