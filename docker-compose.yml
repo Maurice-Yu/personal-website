@@ -7,6 +7,11 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   web:
     build: ./mysite
     command: python mysite/manage.py runserver 0.0.0.0:8000
@@ -19,8 +24,13 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     depends_on:
-      - db
-      - migration
+      db:
+        condition: service_healthy
+      
+      migration:
+        condition: service_completed_successfully
+      
+    restart: on-failure:10
   migration:
     build: ./mysite
     command: python mysite/manage.py migrate
@@ -31,7 +41,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      
+    restart: on-failure:10
   frontend:
     build: ./myanimelistfe
     ports:
