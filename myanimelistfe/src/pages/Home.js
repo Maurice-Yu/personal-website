@@ -174,10 +174,18 @@ function Header() {
         console.log(payload);
       });
     }
+    const prevPage = () => {
+      //prev page functionality
+    }
+    const nextPage = () => {
+      //next page functionality
+    }
     if (animeListData) {
       
       return (
         <div className="anime-list">
+          <button onclick = {() => prevPage()}> Previous Page </button>
+          <button onclick = {() => nextPage()}> Next Page </button>
           {animeListData.results.map((entry, index) => (
           <div>
             <AnimeEntry key={index} info={entry} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms}/>

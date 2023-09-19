@@ -4,8 +4,8 @@ from azure.cosmos import cosmos_client
 import json
 from django.http import JsonResponse
 CONFIG = {
-    "ENDPOINT": "https://anime-offline-db.documents.azure.com:443/",
-    "PRIMARYKEY": "phiGGZqgWjHy2woaTdShWZskLC0CAAIjgNyjCUnfvIthKgDkiHy2DqPq7m62Yt3SCmPm5Req4K9BACDbjYgMig==",
+    "ENDPOINT": "https://a-d-db.documents.azure.com:443/",
+    "PRIMARYKEY": "rtw29WIZVcrcLd1Z6k1s1bqRygloKt87ah2milU41MAufAltCQ62ndyLMyTbWR6pX0D7eKE0fh3MACDbCam4Bw==",
     "DATABASE": "a-o-db",  # Prolly looks more like a name to you
     "CONTAINER": "test1"  # Prolly looks more like a name to you
 }
@@ -36,11 +36,11 @@ def search_feature(request):
     #results = client.list_databases(max_item_count=10)
     db_client = client.get_database_client(CONFIG['DATABASE'])
     container_client = db_client.get_container_client(CONFIG['CONTAINER'])
-    results = container_client.query_items(max_item_count=1, query=QUERY["query"], enable_cross_partition_query=True)
+    results = container_client.query_items(max_item_count=5, query=QUERY["query"], enable_cross_partition_query=True)
     result = []  # To store the converted items
     print(results)
-    #pages = results.by_page()
-    #print(pages)
+    pages = results.by_page()
+    print(pages)
     #p1 = list(pages)
     #p = list(pages.next())
     #print(p1)
@@ -67,10 +67,13 @@ def search_feature(request):
 
     for page in results.by_page():
         # page is of type 'itemPage'
-    
+        print("page")
+        print(page)
         
         # Process each item in the page
         for item in page:
+            print("item")
+            print(item)
             # Convert item to JSON format and append to results
             result.append(item)
             print(item.get("title"))
