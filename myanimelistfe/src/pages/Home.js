@@ -6,6 +6,7 @@ import { Route, Routes, useNavigate} from 'react-router-dom';
 
 export const Home = () => {
   const [show, setShow] = useState(true); //is default home page showing?
+  const [page, setPage] = useState(0); //Which page are we on?
   const [info, setInfo] = useState({title:
     "test title",
     description:"test desc",
@@ -16,12 +17,12 @@ export const Home = () => {
 //const navigate = useNavigate();
 const win= window.sessionStorage;
 const initialdata = {results:
-[{title:
+[[{title:
 "test",
 description:"test",
 pic:"test",
 description:"test",
-}]
+}]]
 }
 win.setItem("animeList",JSON.stringify(initialdata));
 function Header() {
@@ -69,7 +70,7 @@ function Header() {
           onChange={handleQueryChange}
           value={query}
         />
-        <button className="btn btn-outline-success" onClick={() => {queryDB(query); setShow(true)}}>
+        <button className="btn btn-outline-success" onClick={() => {queryDB(query); setShow(true); setPage(0)}}>
           Search
         </button>
       </>
@@ -85,7 +86,7 @@ function Header() {
   function FilterButton({ queryDBtag, filter}) {
     //Have a <button> tag and an associated query that searches by that filter
     return(
-      <button className="button search-filter-button" onClick={() => {console.log(filter); queryDBtag(filter); setShow(true)}}>{filter}</button>
+      <button className="button search-filter-button" onClick={() => {console.log(filter); queryDBtag(filter); setShow(true); setPage(0)}}>{filter}</button>
     )
   }
   function SearchFilters({ queryDBtag }) {
@@ -176,17 +177,26 @@ function Header() {
     }
     const prevPage = () => {
       //prev page functionality
+      console.log("old page: " + page);
+      setPage(Math.max(page - 1, 0));
+      console.log("new page: " + page);
     }
     const nextPage = () => {
       //next page functionality
+      console.log("old page: " + page);
+      setPage(Math.min(page + 1, animeListData.results.length - 1));
+      console.log("new page: " + page);
     }
     if (animeListData) {
+      var data = animeListData.results[page];
+      console.log(animeListData);
+      console.log(data);
       
       return (
         <div className="anime-list">
-          <button onclick = {() => prevPage()}> Previous Page </button>
-          <button onclick = {() => nextPage()}> Next Page </button>
-          {animeListData.results.map((entry, index) => (
+          <button onClick = {() => prevPage()}> Previous Page </button>
+          <button onClick = {() => nextPage()}> Next Page </button>
+          {data.map((entry, index) => (
           <div>
             <AnimeEntry key={index} info={entry} title={entry.title} description={entry.description} img={entry.picture} synonyms={entry.synonyms}/>
           <button onClick={() =>addToList(entry)}>add to list</button>

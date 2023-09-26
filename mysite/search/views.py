@@ -67,17 +67,24 @@ def search_feature(request):
 
     for page in results.by_page():
         # page is of type 'itemPage'
-        print("page")
-        print(page)
+        #print("page")
+        #print(page)
         
+        p = []
         # Process each item in the page
         for item in page:
-            print("item")
-            print(item)
+            #print("item")
+            #print(item)
             # Convert item to JSON format and append to results
-            result.append(item)
-            print(item.get("title"))
-            print("itworks")
+            #result.append(item)
+            p.append(item)
+            #print(item.get("title"))
+            #print("itworks")
+        result.append(p)
+    
+
+
+
 # Create a JSON response using JsonResponse
     response_data = {"results": result}
     return JsonResponse(response_data)
@@ -133,14 +140,20 @@ def search_tag_feature(request):
     #print(second_page_fetched_with_continuation_token)
     for page in results.by_page():
         # page is of type 'itemPage'
-    
+        #print("page")
+        #print(page)
         
+        p = []
         # Process each item in the page
         for item in page:
+            #print("item")
+            #print(item)
             # Convert item to JSON format and append to results
-            result.append(item)
+            #result.append(item)
+            p.append(item)
             print(item.get("title"))
             print("itworks")
+        result.append(p)
 # Create a JSON response using JsonResponse
     response_data = {"results": result}
     return JsonResponse(response_data)
