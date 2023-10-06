@@ -5,8 +5,11 @@ import { useEffect } from 'react';
 import { Route, Routes, useNavigate} from 'react-router-dom';
 
 export const Home = () => {
+  const [lastQuery, setLastQuery] = useState('Bungaku');
+  const [tagSearch, setTagSearch] = useState(false);
   const [show, setShow] = useState(true); //is default home page showing?
   const [page, setPage] = useState(0); //Which page are we on?
+  const [numPages, setNumPages] = useState(1);
   const [info, setInfo] = useState({title:
     "test title",
     description:"test desc",
@@ -51,7 +54,7 @@ function Header() {
       </div>
     );
   }
-  function SearchBar({ queryDB }) {
+  function SearchBar({ queryDB, queryNumItemsTitle }) {
     const [query, setQuery] = useState('Bungaku');
   
     function handleQueryChange(event) {
@@ -70,7 +73,7 @@ function Header() {
           onChange={handleQueryChange}
           value={query}
         />
-        <button className="btn btn-outline-success" onClick={() => {queryDB(query); setShow(true); setPage(0)}}>
+        <button className="btn btn-outline-success" onClick={() => {queryNumItemsTitle(query); setPage(0); setTagSearch(false); setLastQuery(query); queryDB(query); setShow(true)}}>
           Search
         </button>
       </>
@@ -83,13 +86,13 @@ function Header() {
   }
 
   
-  function FilterButton({ queryDBtag, filter}) {
+  function FilterButton({ queryDBtag, queryNumItemsTag, filter}) {
     //Have a <button> tag and an associated query that searches by that filter
     return(
-      <button className="button search-filter-button" onClick={() => {console.log(filter); queryDBtag(filter); setShow(true); setPage(0)}}>{filter}</button>
+      <button className="button search-filter-button" onClick={() => {console.log(filter); queryNumItemsTag(filter); setPage(0); setTagSearch(true); setLastQuery(filter); queryDBtag(filter); setShow(true)}}>{filter}</button>
     )
   }
-  function SearchFilters({ queryDBtag }) {
+  function SearchFilters({ queryDBtag, queryNumItemsTag }) {
     const tags = ["Action", "Adventure", "Comedy", "Coming of Life", "Drama", "Fantasy",
                 "Isekai", "Mystery", "Romance", "School", "Science Fiction", "Seinin", "Shonen",
                 "Slice of Life"];
@@ -100,7 +103,7 @@ function Header() {
       <div className="search-buttons">
         {
           tags.map((t) => (
-            <FilterButton queryDBtag={queryDBtag} filter={t} />
+            <FilterButton queryDBtag={queryDBtag} queryNumItemsTag={queryNumItemsTag} filter={t} />
           ))
           
         }{
@@ -178,19 +181,25 @@ function Header() {
     const prevPage = () => {
       //prev page functionality
       console.log("old page: " + page);
+      var pageChanged = Math.max(page - 1, 0) != page;
       setPage(Math.max(page - 1, 0));
       console.log("new page: " + page);
+      if (pageChanged) {tagSearch ? queryDBtag(lastQuery) : queryDB(lastQuery);}
     }
     const nextPage = () => {
       //next page functionality
       console.log("old page: " + page);
-      setPage(Math.min(page + 1, animeListData.results.length - 1));
+      var pageChanged = Math.min(page + 1, numPages - 1) != page;
+      //var pageChanged = Math.min(page + 1, animeListData.results.length - 1) != page;
+      setPage(Math.min(page + 1, numPages - 1));
+      //setPage(Math.min(page + 1, animeListData.results.length - 1));
       console.log("new page: " + page);
+      if (pageChanged) {tagSearch ? queryDBtag(lastQuery) : queryDB(lastQuery);}
     }
     if (animeListData) {
-      var data = animeListData.results[page];
-      console.log(animeListData);
-      console.log(data);
+      var data = animeListData.results[0];
+      //console.log(animeListData);
+      //console.log(data);
       
       return (
         <div className="anime-list">
@@ -209,7 +218,7 @@ function Header() {
       return <p>No anime entries available.</p>;
     }
   }
-  function MainContent({ animeListData, queryDB, queryDBtag,queryMyList }) {
+  function MainContent({ animeListData, queryDB, queryDBtag, queryMyList }) {
     return (
       <div className="main-content">
         <div style={{ display: 'flex', flex: 2 }}>
@@ -219,17 +228,17 @@ function Header() {
               show ? <AnimeList animeListData={animeListData} /> : <AnimeInfo />
             }
           </div>
-          <RightColumn queryDB={queryDB} queryDBtag={queryDBtag} />
+          <RightColumn queryDB={queryDB} queryDBtag={queryDBtag}/>
         </div>
       </div>
     );
   }
-    function RightColumn({ queryDB, queryDBtag }) {
+    function RightColumn({ queryDB }) {
       
       return (
         <div className="right-column">
-          <SearchBar queryDB={queryDB} />
-          <SearchFilters queryDBtag={queryDBtag} />
+          <SearchBar queryDB={queryDB} queryNumItemsTitle={queryNumItemsTitle} />
+          <SearchFilters queryDBtag={queryDBtag} queryNumItemsTag={queryNumItemsTag} />
         </div>
       );
     }  
@@ -243,12 +252,13 @@ function Header() {
       headers: {
         'Accept': 'application/json',
       },
-      body: JSON.stringify({"searchQ": query})
+      body: JSON.stringify({"searchQ": query, "page": page})
     })
     .then(response => response.json())
     .then(data => {
       console.log(query);
       console.log(data);
+      console.log(numPages);
       setAnimeListData(data); // Update animeListData with new data
       win.setItem("animeList", JSON.stringify(data)); // Update session storage
     });
@@ -260,14 +270,55 @@ function Header() {
       headers: {
         'Accept': 'application/json',
       },
-      body: JSON.stringify({"searchQ": query})
+      body: JSON.stringify({"searchQ": query, "page": page})
     })
     .then(response => response.json())
     .then(data => {
       console.log(query);
       console.log(data);
+      console.log(numPages);
       setAnimeListData(data); // Update animeListData with new data
       win.setItem("animeList", JSON.stringify(data)); // Update session storage
+    });
+  }
+  function queryNumItemsTitle(query) {
+    console.log("query num items");
+    fetch('http://127.0.0.1:8000/search/numItemsTitle/', {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({"searchQ": query})
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("result:");
+      console.log(query);
+      console.log(data);
+      setNumPages(Math.ceil(data.results / 5));
+      console.log(numPages);
+      //setAnimeListData(data); // Update animeListData with new data
+      //win.setItem("animeList", JSON.stringify(data)); // Update session storage
+    });
+  }
+  function queryNumItemsTag(query) {
+    console.log("query num items");
+    fetch('http://127.0.0.1:8000/search/numItemsTag/', {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({"searchQ": query})
+    })
+    .then(response => response.json()) 
+    .then(data => {
+      console.log("result:");
+      console.log(query);
+      console.log(data);
+      setNumPages(Math.ceil(data.results / 5));
+      console.log(numPages);
+      //setAnimeListData(data); // Update animeListData with new data
+      //win.setItem("animeList", JSON.stringify(data)); // Update session storage
     });
   }
   function queryMyList() {
