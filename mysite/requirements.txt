@@ -1,0 +1,5 @@
+Django
+django-cors-headers
+azure-cosmos
+psycopg2>=2.8
+bcrypt

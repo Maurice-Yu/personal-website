@@ -1,0 +1,93 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .flex-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column; /* Change to column layout */
+  }
+  
+  .main-content {
+    flex: 1;
+    display: flex; /* Use flex layout */
+    justify-content: space-between; /* Vertically center the content */
+  }
+  
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #f2f2f2;
+    padding: 10px;
+    border-radius: 10px;
+    width: 25%;
+  }
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 5px 0;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: #2980b9;
+  }
+  .anime-entry {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  .checkbox {
+    margin-right: 10px;
+  }
+  
+  .title {
+    flex: 2;
+    font-weight: bold;
+  }
+  
+  .description {
+    flex: 3;
+    color: #666;
+  }
+  footer {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+  .anime-list {
+    flex: 3;
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling if needed */
+  }
+  .anime-list-container {
+    flex: 3;
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling if needed */
+    max-height: calc(100vh - 90px); /* Subtract header and footer heights */
+  }
